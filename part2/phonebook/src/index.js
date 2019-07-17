@@ -94,6 +94,7 @@ const App = () => {
     .then(response => {
       console.log('promise fulfilled')
       setPersons(response.data)
+      console.log(response.data)
     })
 }, [])
 
