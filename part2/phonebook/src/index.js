@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
+import personService from './services/persons'
 import axios from 'axios'
 
 const Filter = (props) => {
@@ -30,20 +31,37 @@ const PersonForm = (props) => {
       name: props.newNa,
       number: props.newNo,
       date: new Date().toISOString(),
-      id: props.newPe.length + 1,
+      id: Math.floor((Math.random() * 1000) + 1),
     }
     let found = props.newPe.find(function(element) {
       return (element.name === props.newNa)
-      });
+      })
+
     if (found === undefined) {
       props.setPe(props.newPe.concat(personObject))
+      personService.create(personObject)
       props.setNa('')
       props.setNo('')
     }
     else {
-      alert(props.newNa + ' is already added to phonebook')
+      let result2 = window.confirm(`${props.newNa} is already added to the phonebook, replace the older number to a new one?`)
+      if (result2 === true){
+        let id_user = props.newPe.find(x => x.name === props.newNa).id
+        let copy = props.newPe
+        personService.update( id_user ,{ ...personObject, id: id_user})
+        .then(returnedPerson => {
+        let removeIndex = props.newPe.map(function(item) { return item.id; }).indexOf(id_user)
+        console.log(copy)
+        copy[removeIndex].number = props.newNo
+        props.setPe(copy)
+        props.setNa('')
+        props.setNo('')
+        })
+      }
+      else {
       props.setNa('')
       props.setNo('')
+      }
     }
   }
 
@@ -66,9 +84,26 @@ const Persons = (props) => {
     })
   }
 
+  const deletePerson = (id) => {
+    let result = window.confirm('Confirm deletion?')
+    if (result === true){
+      let copy2 = props.persons
+      personService.delete_person(id)
+      let deletionIndex = props.persons.map(function(item) { return item.id }).indexOf(id)
+      console.log(copy2)
+      copy2.splice(deletionIndex, 1)
+      console.log(copy2)
+      let tesss = ([
+        { name: 'Arto Hellas', number: '99632-1057', date: "2019-07-01T00:00:00.334Z", id: 1 }, { name: 'Arto Hedsafallas', number: '99632-1057', date: "2019-07-01T00:00:00.334Z", id: 2 }
+      ])
+      console.log(tesss)
+      props.setPe(tesss)
+    }
+  }
+
   const rows = () => filterItems(props.newFi).map(person =>
     <div key={person.id}>
-      {person.name} {person.number}
+      {person.name} {person.number} <button onClick={ () => deletePerson(person.id) } >delete</button>
     </div>
   )
 
@@ -98,13 +133,17 @@ const App = () => {
     })
 }, [])
 
+  useEffect(() => {
+  console.log("HEY")
+  }, [persons])
+
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter set={setNewFilter} new={newFilter} />
       <h3>add a new</h3>
       <PersonForm setNo={setNewNumber} newNo={newNumber} setNa={setNewName} newNa={newName} newPe={persons} setPe={setPersons} />
-      <Persons persons={persons} newFi={newFilter} />
+      <Persons persons={persons} setPe={setPersons} newFi={newFilter} />
     </div>
   )
 }

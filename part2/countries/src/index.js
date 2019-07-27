@@ -35,6 +35,7 @@ const Country = (props) => {
 
   const url = 'http://api.apixu.com/v1/current.json?key=fc55982549984c9ca1a204447191807&q=' + props.country.name
 
+  useEffect(() => {
   axios
     .get(url)
     .then(response => {
@@ -42,8 +43,7 @@ const Country = (props) => {
       setNewWeather(response.data)
       setRender(true)
     })
-
-  console.log(newWeather.location)
+}, [])
 
     return (
     <div>
