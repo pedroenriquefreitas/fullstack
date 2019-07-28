@@ -87,17 +87,11 @@ const Persons = (props) => {
   const deletePerson = (id) => {
     let result = window.confirm('Confirm deletion?')
     if (result === true){
-      let copy2 = props.persons
+      let copy2 = props.persons.concat([])
       personService.delete_person(id)
       let deletionIndex = props.persons.map(function(item) { return item.id }).indexOf(id)
-      console.log(copy2)
       copy2.splice(deletionIndex, 1)
-      console.log(copy2)
-      let tesss = ([
-        { name: 'Arto Hellas', number: '99632-1057', date: "2019-07-01T00:00:00.334Z", id: 1 }, { name: 'Arto Hedsafallas', number: '99632-1057', date: "2019-07-01T00:00:00.334Z", id: 2 }
-      ])
-      console.log(tesss)
-      props.setPe(tesss)
+      props.setPe(copy2)
     }
   }
 
@@ -134,7 +128,7 @@ const App = () => {
 }, [])
 
   useEffect(() => {
-  console.log("HEY")
+  console.log("State of Persons has changed")
   }, [persons])
 
   return (
