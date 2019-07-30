@@ -2,6 +2,37 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import personService from './services/persons'
 import axios from 'axios'
+import './index.css'
+
+const Alert = (props) => {
+
+  if (props.alert === null) {
+    return null
+  }
+
+  const goodAlertStyle = {
+    color: '#23db79'
+  }
+
+  const badAlertStyle = {
+    color: '#eb4034'
+  }
+
+  if (props.alertGood) {
+    return (
+      <div className="error" style={goodAlertStyle} >
+        {props.alert}
+      </div>
+    )
+  }
+  else {
+    return (
+      <div className="error" style={badAlertStyle} >
+        {props.alert}
+      </div>
+    )
+  }
+}
 
 const Filter = (props) => {
 
@@ -40,8 +71,13 @@ const PersonForm = (props) => {
     if (found === undefined) {
       props.setPe(props.newPe.concat(personObject))
       personService.create(personObject)
+      props.setAlGood(true)
+      props.setAl(`Added ${props.newNa}`)
       props.setNa('')
       props.setNo('')
+      setTimeout(() => {
+          props.setAl(null)
+        }, 5000)
     }
     else {
       let result2 = window.confirm(`${props.newNa} is already added to the phonebook, replace the older number to a new one?`)
@@ -88,8 +124,14 @@ const Persons = (props) => {
     let result = window.confirm('Confirm deletion?')
     if (result === true){
       let copy2 = props.persons.concat([])
-      personService.delete_person(id)
       let deletionIndex = props.persons.map(function(item) { return item.id }).indexOf(id)
+      personService.delete_person(id).catch(error => {
+        props.setAlGood(false)
+        props.setAl(`Information of ${props.persons[deletionIndex].name} has already been removed from the server`)
+        setTimeout(() => {
+            props.setAl(null)
+          }, 5000)
+      })
       copy2.splice(deletionIndex, 1)
       props.setPe(copy2)
     }
@@ -116,6 +158,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('write name here...')
   const [ newNumber, setNewNumber ] = useState('write number here...')
   const [ newFilter, setNewFilter ] = useState('')
+  const [ newAlert, setNewAlert ] = useState(null)
+  const [ alertGood, setAlertGood ] = useState(false)
 
   useEffect(() => {
   axios
@@ -134,10 +178,11 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Alert alert={newAlert} alertGood={alertGood} />
       <Filter set={setNewFilter} new={newFilter} />
       <h3>add a new</h3>
-      <PersonForm setNo={setNewNumber} newNo={newNumber} setNa={setNewName} newNa={newName} newPe={persons} setPe={setPersons} />
-      <Persons persons={persons} setPe={setPersons} newFi={newFilter} />
+      <PersonForm setNo={setNewNumber} newNo={newNumber} setNa={setNewName} newNa={newName} newPe={persons} setPe={setPersons} setAl={setNewAlert} setAlGood={setAlertGood}/>
+      <Persons persons={persons} setPe={setPersons} newFi={newFilter} setAl={setNewAlert} setAlGood={setAlertGood} />
     </div>
   )
 }
