@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.css"],"names":[],"mappings":"AAAA,OACE,kBAAqB,CACrB,cAAe,CACf,kBAAmB,CACnB,iBAAkB,CAClB,YAAa,CACb,kBACF","file":"main.cd1cdcf6.chunk.css","sourcesContent":[".error {\n  background: lightgrey;\n  font-size: 20px;\n  border-style: solid;\n  border-radius: 5px;\n  padding: 10px;\n  margin-bottom: 10px;\n}\n"]}

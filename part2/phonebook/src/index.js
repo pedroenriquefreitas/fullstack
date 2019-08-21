@@ -163,7 +163,7 @@ const App = () => {
 
   useEffect(() => {
   axios
-    .get('http://localhost:3001/persons')
+    .get('https://stormy-bastion-72047.herokuapp.com/api/persons')
     .then(response => {
       console.log('promise fulfilled')
       setPersons(response.data)
